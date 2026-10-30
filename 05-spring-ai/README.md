@@ -1,85 +1,110 @@
-# DIO Spring Boot - Final Project 05: Spring AI (budgeting)
+# Budgeting API — Spring AI
 
-## Introduction
+Projeto desenvolvido como desafio final do módulo **Spring AI**, da trilha DIO Spring Boot.
 
-This final module applies Spring AI in a budgeting API while preserving the same layered architecture used across the track.
+A aplicação tem como objetivo oferecer um assistente financeiro capaz de interpretar solicitações em linguagem natural, registrar transações e consultar despesas por categoria, utilizando recursos de Inteligência Artificial.
 
-The goal is to integrate AI capabilities without bypassing domain and use case boundaries.
+## Objetivo
 
-## Code Context
+Desenvolver uma API REST que integre Spring AI a um fluxo de processamento de áudio e ferramentas de manipulação de transações financeiras.
 
-The project processes voice commands to create and query financial transactions.
+### Fluxo da aplicação
 
-Primary flow:
+1. Receber um arquivo de áudio enviado pelo usuário.
+2. Converter o áudio em texto utilizando um modelo de transcrição.
+3. Interpretar a solicitação por meio de um modelo de linguagem.
+4. Acionar ferramentas (*Tool Calling*) para registrar ou consultar transações.
+5. Gerar uma resposta em áudio no formato MP3.
 
-1. Client uploads an audio file.
-2. Audio is transcribed into text.
-3. The model selects an application tool/use case.
-4. The use case persists or queries transaction data.
-5. The final response is converted to audio.
+## Tecnologias utilizadas
 
-## Project Structure
+- Java 25
+- Spring Boot 4.0.5
+- Spring AI 2.0.0-M4
+- Gradle
+- Spring Data JPA
+- MySQL
+- Docker Compose
+- JUnit 5
+- OpenAI API
 
-- `src/main/java/dio/budgeting/domain`
-  - Domain model and repository contract.
-- `src/main/java/dio/budgeting/application`
-  - Use cases used by both REST and AI tool calling.
-- `src/main/java/dio/budgeting/infrastructure`
-  - HTTP adapters, JPA adapters, and integration glue.
+## Arquitetura
 
-## Module-Specific Topics
+O projeto utiliza uma organização em camadas:
 
-### Speech-to-text
+| Camada | Responsabilidade |
+|---|---|
+| `domain` | Entidades e regras de negócio |
+| `application` | Casos de uso da aplicação |
+| `infrastructure` | Persistência, configurações e integrações externas |
 
-- Uses `TranscriptionModel` for audio transcription.
-- Model settings are configured in `application.properties`.
+Essa separação favorece a organização, a manutenção e a evolução do código.
 
-### Tool calling
+## Funcionalidades
 
-- `ChatClient` registers use-case tools.
-- `@Tool` methods expose business capabilities to the model.
+- Registro de transações financeiras.
+- Consulta de transações por categoria.
+- Validação dos dados no domínio.
+- Integração com modelos de IA para transcrição, interpretação e geração de áudio.
+- Utilização de ferramentas (*Tool Calling*) para executar operações financeiras.
 
-### Text-to-speech
+## Categorias de transações
 
-- `TextToSpeechModel` produces MP3 output from final text.
-- AI endpoint returns generated audio.
+Atualmente, o domínio contempla as seguintes categorias:
 
-## Spring AI Documentation
+- `GROCERIES` — compras e mercado.
+- `PHARMA` — farmácia.
+- `AUTO` — despesas automotivas.
 
-- Spring AI Reference: https://docs.spring.io/spring-ai/reference/index.html
-- ChatModel API: https://docs.spring.io/spring-ai/reference/api/chatmodel.html
-- ChatClient API: https://docs.spring.io/spring-ai/reference/api/chatclient.html
-- Tools API: https://docs.spring.io/spring-ai/reference/api/tools.html
-- Audio Transcriptions API: https://docs.spring.io/spring-ai/reference/api/audio/transcriptions.html
-- Audio Speech API: https://docs.spring.io/spring-ai/reference/api/audio/speech.html
+## Configuração do ambiente
 
-## Shared Architecture References
+### Pré-requisitos
 
-Common architecture concepts are documented in the root README:
+- JDK 25.
+- Docker Desktop.
+- Chave de API da OpenAI.
 
-- [DDD layers](../README.md#ddd-layered-architecture)
-- [Class vs record](../README.md#java-class-vs-java-record-in-domain-modeling)
-- [Strong typed identifiers](../README.md#strong-typed-identifiers)
-- [Repository pattern](../README.md#repository-pattern)
-- [Use cases and Clean Architecture](../README.md#use-cases-and-clean-architecture)
-- [Docker Compose support](../README.md#docker-compose-support-in-development)
+### Variável de ambiente
 
-## How to Run
+Configure a variável `OPENAI_API_KEY` com uma chave válida da API OpenAI.
 
-Set your OpenAI API key:
+Não compartilhe ou versione chaves de API no repositório.
+
+### Banco de dados
+
+O projeto utiliza MySQL, configurado por meio do arquivo `compose.yml`.
+
+Para iniciar o banco de dados:
 
 ```bash
-export OPENAI_API_KEY="your_api_key_here"
+docker compose up -d
 ```
 
-Run the application and tests:
+A aplicação utiliza a porta `3307` do host para acessar o MySQL.
 
-```bash
-./gradlew bootRun
-./gradlew test
+## Testes
+
+Os testes de domínio verificam a criação de transações e a rejeição de dados inválidos.
+
+Para executar especificamente os testes de `TransactionTest`:
+
+```powershell
+.\gradlew.bat test --tests "dio.budgeting.domain.TransactionTest"
 ```
 
-## Notes
+### Validações implementadas
 
-- Educational final project focused on AI plus architectural discipline.
-- External provider integration tests may require active credentials.
+- Criação de transação com dados válidos.
+- Rejeição de descrição vazia.
+- Rejeição de categoria nula.
+
+**Resultado da execução:** 3 testes executados, sem falhas.
+
+## Evolução do projeto
+
+O projeto permanece em evolução, com possibilidades de aprimoramento na cobertura de testes, validação dos fluxos de integração e expansão das funcionalidades.
+
+## Autor
+
+Desenvolvido por **Michel Pereira** como parte dos estudos e desafios práticos da trilha de desenvolvimento Java e Spring Boot da DIO.
+
